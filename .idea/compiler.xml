@@ -9,5 +9,8 @@
         <module name="TCPTester" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="TCPTester" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>

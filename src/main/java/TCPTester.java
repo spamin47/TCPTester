@@ -65,13 +65,11 @@ public class TCPTester {
                 System.out.println("Connected to server. Ready to accept commands.");
 
                 while(true){
-                    BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
                     System.out.println("_____________________________" +
                             "\nEnter number of bytes to send:");
-                    String command = keyboard.readLine();
                     int size = 0;
                     try{
-                        size = Integer.parseInt(command);
+                        size = keyboard_readInt();
                     }catch(NumberFormatException e){
                         System.out.println("Invalid command. Not a number.");
                         e.printStackTrace();
@@ -85,13 +83,10 @@ public class TCPTester {
 
                     //send byte array size
                     PrintWriter pr = new PrintWriter(socket.getOutputStream(),true);
-                    pr.println(command);
+                    pr.println(size);
 
                     //get response from server
-                    InputStreamReader in = new InputStreamReader(socket.getInputStream());
-                    BufferedReader bf = new BufferedReader(in);
-                    String line = bf.readLine();
-                    System.out.println("Server: " + line);
+                    getServerResponse(socket);
 
                     //send bytes
                     socket = new Socket("localhost",serverPort);
@@ -103,10 +98,7 @@ public class TCPTester {
                     socketOut.write(message);
 
                     //get response from server
-                    in = new InputStreamReader(socket.getInputStream());
-                    bf = new BufferedReader(in);
-                    line = bf.readLine();
-                    System.out.println("Server: " + line);
+                    getServerResponse(socket);
 
                     //record round trip time and throughput
                     long finish = System.currentTimeMillis();
@@ -123,5 +115,22 @@ public class TCPTester {
 
         }
 
+    }
+
+    public static String keyboard_readLine() throws IOException {
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        return keyboard.readLine();
+    }
+    public static int keyboard_readInt() throws IOException, NumberFormatException {
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        int num = Integer.parseInt(keyboard.readLine());
+        return num;
+    }
+    //get response from server
+    public static void getServerResponse(Socket s) throws  IOException{
+        InputStreamReader in = new InputStreamReader(s.getInputStream());
+        BufferedReader bf = new BufferedReader(in);
+        String line = bf.readLine();
+        System.out.println("Server: " + line);
     }
 }

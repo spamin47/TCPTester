@@ -13,6 +13,7 @@ public class TCPTester {
             try{
                 ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
                 while(true){
+                    System.out.println("Listening...");
                     Socket ss = serverSocket.accept();
                     InputStreamReader in = new InputStreamReader(ss.getInputStream());
                     BufferedReader br = new BufferedReader(in);
@@ -21,7 +22,7 @@ public class TCPTester {
 
                     //Server's response
                     PrintStream out = new PrintStream(ss.getOutputStream());
-                    System.out.println("ACKED");
+                    out.println("ACKED");
                 }
 
 
@@ -30,24 +31,29 @@ public class TCPTester {
             }
         }else{
             try{
-                ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[1]));
-                Socket socket = new Socket("localhost",Integer.parseInt(args[0]));
+                int port =Integer.parseInt(args[1]);
+                int serverPort = Integer.parseInt(args[0]);
+                ServerSocket serverSocket = new ServerSocket(port);
+
 
                 //Request
                 System.out.println("Connected to server. Ready to accept commands.");
-                BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
-                String command = keyboard.readLine();
-                PrintWriter pr = new PrintWriter(socket.getOutputStream(),true);
-                pr.println(command);
 
-                //get response from server
-                InputStreamReader in = new InputStreamReader(socket.getInputStream());
-                BufferedReader bf = new BufferedReader(in);
-                String line = bf.readLine();
-                System.out.println("Server: " + line);
+                while(true){
+                    Socket socket = new Socket("localhost",serverPort);
+                    BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+                    String command = keyboard.readLine();
+                    PrintWriter pr = new PrintWriter(socket.getOutputStream(),true);
+                    pr.println(command);
 
-                socket.close();
-                serverSocket.close();
+                    //get response from server
+                    InputStreamReader in = new InputStreamReader(socket.getInputStream());
+                    BufferedReader bf = new BufferedReader(in);
+                    String line = bf.readLine();
+                    System.out.println("Server: " + line);
+                }
+//                socket.close();
+//                serverSocket.close();
             }catch(IOException e){
                 e.printStackTrace();
             }

@@ -2,6 +2,8 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.Buffer;
+import java.util.Random;
+
 
 public class TCPTester {
 
@@ -15,10 +17,13 @@ public class TCPTester {
                 while(true){
                     System.out.println("Listening...");
                     Socket ss = serverSocket.accept();
-                    InputStreamReader in = new InputStreamReader(ss.getInputStream());
-                    BufferedReader br = new BufferedReader(in);
-                    String line = br.readLine();
-                    System.out.println("From client(" + ss.getPort()+"): "+ line);
+//                    InputStreamReader in = new InputStreamReader(ss.getInputStream());
+//                    BufferedReader br = new BufferedReader(in);
+//                    String line = br.readLine();
+//                    System.out.println("From client(" + ss.getPort()+"): "+ line);
+                    DataInputStream dIn = new DataInputStream(ss.getInputStream());
+                    System.out.println("From client(" + ss.getPort()+"): "+ dIn);
+
 
                     //Server's response
                     PrintStream out = new PrintStream(ss.getOutputStream());
@@ -42,9 +47,16 @@ public class TCPTester {
                 while(true){
                     Socket socket = new Socket("localhost",serverPort);
                     BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+                    System.out.println("Enter in message size in (bytes)");
                     String command = keyboard.readLine();
-                    PrintWriter pr = new PrintWriter(socket.getOutputStream(),true);
-                    pr.println(command);
+                    System.out.println(command);
+                    byte[] message = new byte[Integer.parseInt(command)];
+                    new Random().nextBytes(message); //generate random bytes into the supplied array
+//                    PrintWriter pr = new PrintWriter(socket.getOutputStream(),true);
+//                    pr.println(message);
+
+                    OutputStream socketOut = socket.getOutputStream();
+                    socketOut.write(message);
 
                     //get response from server
                     InputStreamReader in = new InputStreamReader(socket.getInputStream());

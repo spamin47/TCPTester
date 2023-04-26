@@ -65,16 +65,19 @@ public class TCPTester {
                 System.out.println("Connected to server. Ready to accept commands.");
 
                 while(true){
-                    System.out.println("_____________________________" +
-                            "\nEnter number of bytes to send:");
+                    System.out.println("_____________________________\n");
                     int size = 0;
+                    int loops = 0;
                     try{
-                        size = keyboard_readInt();
+                        size = keyboard_readInt("Enter number of bytes to send:");
+                        loops = keyboard_readInt("Enter number of iteration.");
                     }catch(NumberFormatException e){
                         System.out.println("Invalid command. Not a number.");
                         e.printStackTrace();
                         continue;
                     }
+
+
 
                     Socket socket = new Socket("localhost",serverPort);
 
@@ -88,27 +91,31 @@ public class TCPTester {
                     //get response from server
                     getServerResponse(socket);
 
-                    //send bytes
-                    socket = new Socket("localhost",serverPort);
-                    OutputStream socketOut = socket.getOutputStream();
+                    //send array of bytes # of times
+                    for(int i =0;i<loops;i++){
+                        //send bytes
+                        socket = new Socket("localhost",serverPort);
+                        OutputStream socketOut = socket.getOutputStream();
 
-                    //start time
-                    long start = System.currentTimeMillis();
+                        //start time
+                        long start = System.currentTimeMillis();
 
-                    socketOut.write(message);
+                        socketOut.write(message);
 
-                    //get response from server
-                    getServerResponse(socket);
+                        //get response from server
+                        getServerResponse(socket);
 
-                    //record round trip time and throughput
-                    long finish = System.currentTimeMillis();
-                    double rtt = finish - start;
-                    double throughput = (8.0*size)/(1000*rtt); //throughput in bps
-                    System.out.println("Round Trip Time: " + rtt + "ms");
-                    System.out.printf("Throughput: %.4fbps\n",throughput);
-                }
+                        //record round trip time and throughput
+                        long finish = System.currentTimeMillis();
+                        double rtt = finish - start;
+                        double throughput = (8.0*size)/(1000*rtt); //throughput in bps
+                        System.out.println("Round Trip Time: " + rtt + "ms");
+                        System.out.printf("Throughput: %.4fbps\n",throughput);
+                    }
 //                socket.close();
 //                serverSocket.close();
+                    }
+
             }catch(IOException e){
                 e.printStackTrace();
             }
@@ -122,6 +129,12 @@ public class TCPTester {
         return keyboard.readLine();
     }
     public static int keyboard_readInt() throws IOException, NumberFormatException {
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        int num = Integer.parseInt(keyboard.readLine());
+        return num;
+    }
+    public static int keyboard_readInt(String statement) throws IOException, NumberFormatException {
+        System.out.println(statement);
         BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
         int num = Integer.parseInt(keyboard.readLine());
         return num;

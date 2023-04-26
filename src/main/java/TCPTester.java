@@ -70,7 +70,7 @@ public class TCPTester {
                     int loops = 0;
                     try{
                         size = keyboard_readInt("Enter number of bytes to send:");
-                        loops = keyboard_readInt("Enter number of iteration.");
+                        loops = keyboard_readInt("Enter number of iteration:");
                     }catch(NumberFormatException e){
                         System.out.println("Invalid command. Not a number.");
                         e.printStackTrace();
@@ -78,7 +78,7 @@ public class TCPTester {
                     }
 
 
-
+                    for(int i =0;i<loops;i++){
                     Socket socket = new Socket("localhost",serverPort);
 
                     byte[] message = new byte[size];
@@ -92,14 +92,15 @@ public class TCPTester {
                     getServerResponse(socket);
 
                     //send array of bytes # of times
-                    for(int i =0;i<loops;i++){
-                        //send bytes
+
+                        //setup socket for sending bytes
                         socket = new Socket("localhost",serverPort);
                         OutputStream socketOut = socket.getOutputStream();
 
-                        //start time
+                        //start time (for calculating RTT)
                         long start = System.currentTimeMillis();
 
+                        //send bytes
                         socketOut.write(message);
 
                         //get response from server
@@ -134,8 +135,8 @@ public class TCPTester {
         return num;
     }
     public static int keyboard_readInt(String statement) throws IOException, NumberFormatException {
-        System.out.println(statement);
-        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print(statement + " ");
+        BufferedReader keyboard= new BufferedReader(new InputStreamReader(System.in));
         int num = Integer.parseInt(keyboard.readLine());
         return num;
     }

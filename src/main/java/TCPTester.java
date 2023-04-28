@@ -6,6 +6,7 @@ import java.util.Random;
 
 
 public class TCPTester {
+   public static final String filename = "test.txt";
 
     public static void main(String[] args) throws Exception {
         if(args.length<1 || args.length>2){
@@ -73,8 +74,13 @@ public class TCPTester {
             }catch(IOException e){
                 e.printStackTrace();
             }
-        }else{
+        }else{//client socket
+
             try{
+
+                File testFile = new File(filename);
+
+
                 int port =Integer.parseInt(args[1]);
                 int serverPort = Integer.parseInt(args[0]);
                 ServerSocket serverSocket = new ServerSocket(port);
@@ -99,6 +105,8 @@ public class TCPTester {
                         continue;
                     }
 
+
+                    FileWriter fw = new FileWriter(filename);
                     //iterate sending bytes
                     for(int i =0;i<loops;i++){
                         Socket socket = new Socket("localhost",serverPort);
@@ -138,9 +146,13 @@ public class TCPTester {
 
                         //record round trip time and throughput
                         long finish = System.currentTimeMillis();
-                        calculateThroughput(start,finish,size);
+                        double t = getThroughput(start,finish,size);
+                        if(Double.isFinite(t)){
+                            fw.write((i+1)+", "+ t+"\n");
+                        }
 
                     }
+                    fw.close();
 
 
                 }
@@ -171,10 +183,11 @@ public class TCPTester {
         String line = bf.readLine();
         System.out.println("Server: " + line);
     }
-    public static void calculateThroughput(long start, long finish,int size){
+    public static double getThroughput(long start, long finish,int size){
         double rtt = finish - start;
         double throughput = (8.0*size)/(1000*rtt); //throughput in bps
         System.out.println("Round Trip Time: " + rtt + "ms");
         System.out.printf("Throughput: %.4fbps\n",throughput);
+        return throughput;
     }
 }

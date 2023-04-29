@@ -188,7 +188,7 @@ public class TCPTester {
         double rtt = finish - start;
         double sec = rtt/1_000_000_000;
         double throughput = (8.0*size)/sec; //throughput in bps
-        System.out.println("Round Trip Time: " + rtt + "ns");
+        System.out.println("Round Trip Time: " + rtt + "ns (" + (rtt/1000000) + "ms)");
         System.out.printf("Throughput: %.4fMbps\n",throughput/1000000);
         return throughput;
     }

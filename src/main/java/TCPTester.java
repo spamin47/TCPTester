@@ -131,7 +131,7 @@ public class TCPTester {
                             socket = new Socket("localhost",serverPort);
                             OutputStream socketOut = socket.getOutputStream();
                             //start time
-                            start = System.currentTimeMillis();
+                            start = System.nanoTime();
                             socketOut.write(message);
                             //get response from server
                             getServerResponse(socket);
@@ -139,13 +139,13 @@ public class TCPTester {
                             InetAddress address = InetAddress.getByName("localhost");
                             DatagramSocket dSocket = new DatagramSocket();
                             DatagramPacket packet = new DatagramPacket(message,size,address,serverPort);
-                            start = System.currentTimeMillis();
+                            start = System.nanoTime();
                             dSocket.send(packet);
                         }
 
 
                         //record round trip time and throughput
-                        long finish = System.currentTimeMillis();
+                        long finish = System.nanoTime();
                         double t = getThroughput(start,finish,size);
                         if(Double.isFinite(t)){
                             fw.write((i+1)+", "+ t+"\n");
@@ -184,10 +184,12 @@ public class TCPTester {
         System.out.println("Server: " + line);
     }
     public static double getThroughput(long start, long finish,int size){
+        System.out.println("Start:" + start + " finish:" + finish);
         double rtt = finish - start;
-        double throughput = (8.0*size)/(1000*rtt); //throughput in bps
-        System.out.println("Round Trip Time: " + rtt + "ms");
-        System.out.printf("Throughput: %.4fbps\n",throughput);
+        double sec = rtt/1_000_000_000;
+        double throughput = (8.0*size)/sec; //throughput in bps
+        System.out.println("Round Trip Time: " + rtt + "ns");
+        System.out.printf("Throughput: %.4fMbps\n",throughput/1000000);
         return throughput;
     }
 }
